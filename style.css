@@ -29,14 +29,27 @@ body {
   font-family: Orbitron, sans-serif;
 }
 
-#lap {
+#countdown {
+  font-family: Orbitron-Black;
+  font-size: 150px;
+  color: #fff;
+  text-align: center;
+}
+
+.lap {
   font-family: Orbitron-Black;
   font-size: 20px;
   color: #fff;
 }
 
-#place {
+.place {
   font-family: Orbitron-Black;
   font-size: 20px;
   color: #fff;
+}
+
+.portrait {
+  width: 64px;
+  height: 64px;
+  background-image: url('images/race_or_die5.png');
 }

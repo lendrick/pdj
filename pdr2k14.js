@@ -1,5 +1,5 @@
 $(function() {
-  var Q = Quintus({ development: true, audioSupported: ['ogg'] }).include("Sprites, Scenes, Input, 2D, Anim, Audio").setup("pdr").controls();
+  var Q = Quintus({ development: true, audioSupported: ['ogg'] }).include("Sprites, Scenes, Input, 2D, Anim, Audio").setup("pdr").controls();   
   
   var terrain = [
     0,
@@ -47,6 +47,10 @@ $(function() {
   var enemyCheckpoints;
   var mapContext = $('#map')[0].getContext('2d');
   var allCars;
+  var paused = true;
+  var player;
+  var currentTarget = false;
+  var prevTarget = false;
   
   Q.SPRITE_CAR = 64;
   Q.SPRITE_BULLET = 128;
@@ -100,14 +104,48 @@ $(function() {
         realPosition: 0,
         fired: false,
         spriteType: 'car',
+        maxLife: 100,
         life: 100,
-        lap: 0
+        lap: 0,
+        maxEnergy: 100,
+        energy: 100,
+        energyRegen: 20
       });
       this.add("2d");
       this.p.type |= Q.SPRITE_CAR;
+      $('#playerPortrait .portrait').show().css('background-position', (this.p.frame * 64) + "px 0");
     },
     
     step: function(dt) {
+      if(paused) return;
+      
+      this.p.energy += this.p.energyRegen * dt;
+      this.p.energy = Math.min(this.p.energy, this.p.maxEnergy);
+      
+      $('#playerPortrait .energyBar').css('width', Math.floor(this.p.energy / this.p.maxEnergy * 100) + "%");
+      $('#playerPortrait .healthBar').css('width', Math.floor(this.p.life / this.p.maxLife * 100) + "%");
+      
+      if(currentTarget && !prevTarget) {
+        $('#targetPortrait').show();
+      }
+      
+      if(currentTarget && currentTarget != prevTarget) {
+        $('#targetPortrait .portrait').css('background-position', (currentTarget.p.frame * 64) + "px 0");
+      }
+      
+      if(prevTarget && !currentTarget) {
+        $('#targetPortrait').hide();
+      }
+      
+      if(currentTarget) {
+        $('#targetPortrait .energyBar').css('width', Math.floor(currentTarget.p.energy / currentTarget.p.maxEnergy * 100) + "%");
+        $('#targetPortrait .healthBar').css('width', Math.floor(currentTarget.p.life / currentTarget.p.maxLife * 100) + "%");
+        $('#targetPortrait .lap').html("Lap " + (currentTarget.p.lap+1) + " / " + track.laps);        
+        $('#targetPortrait .place').html(currentTarget.p.place + " / " + allCars.length);
+      }
+      
+      prevTarget = currentTarget;      
+      
       var tx = Math.floor(this.p.x / tilemap.p.w);
       var ty = Math.floor(this.p.y / tilemap.p.h);
       var tile = 1;
@@ -191,19 +229,7 @@ $(function() {
         }
       }
       
-      //this.p.x += this.p.vx;
-      //this.p.y += this.p.vy;
-      
       $('#playerMarker').css({left: this.p.x / 32 * 150/500 - 3, top: this.p.y / 32 * 150/500 - 3});
-      
-      /*
-      for(g in this.p.guns) {      
-        var gun = this.p.guns[g];
-        gun.p.angle = this.p.angle;
-        gun.p.x = this.p.x;
-        gun.p.y = this.p.y;
-      };
-      */
       
       this.p.prevPosition = this.p.position;
       this.p.position = Math.atan2(this.p.y - 250*32, this.p.x - 250*32) / Math.PI * 180;
@@ -211,17 +237,35 @@ $(function() {
 
       if(this.p.prevPosition >= 358 && this.p.position <= 2) {
         this.p.lap++;
-        $('#lap').html("Lap " + (this.p.lap+1) + " / " + track.laps);
+        $('#playerPortrait .lap').html("Lap " + (this.p.lap+1) + " / " + track.laps);
       } else if(this.p.prevPosition <= 2 && this.p.position >= 358) {
         this.p.lap--;
-        $('#lap').html("Lap " + (this.p.lap+1) + " / " + track.laps);
+        $('#playerPortrait .lap').html("Lap " + (this.p.lap+1) + " / " + track.laps);
       }
       
       this.p.realPosition = this.p.lap * 360 + this.p.position;
       
       allCars.sort(sortCars);
       this.p.place = allCars.length - allCars.indexOf(this);
-      $('#place').html(this.p.place + " / " + allCars.length);
+      $('#playerPortrait .place').html(this.p.place + " / " + allCars.length);
+      
+      // Cross the finish line...
+      if(this.p.lap > track.laps) {
+        paused = true; 
+        Q.pauseGame();
+        $('#overlay').fadeIn();
+        $('#countdown').show().fadeIn();
+        $('#countdown').html("PLACE: " + this.p.place);
+      }
+      
+      // Eliminate all other cars...
+      if(allCars.length == 1) {
+        paused = true; 
+        Q.pauseGame();
+        $('#overlay').fadeIn();
+        $('#countdown').show().fadeIn();
+        $('#countdown').html("WIN!");
+      }      
     },
     
     collision: function(objs) {
@@ -256,23 +300,32 @@ $(function() {
         prevPosition: 0,
         realPosition: 0,
         spriteType: 'car',
+        maxLife: 100,
         life: 100,
-        lap: 0
+        lap: 0,
+        maxEnergy: 100,
+        energy: 100,
+        energyRegen: 1
       });
       this.add("2d");
       this.p.type |= Q.SPRITE_CAR;
     },
     
     step: function(dt) {
+      if(paused) return;
       if(this.p.life <= 0) {
-        this.destroy();
         for(g in this.p.guns) {
           this.p.guns[g].destroy();
         }
         $(this.p.marker).fadeOut();
         allCars.splice(allCars.indexOf(this), 1);
+        if(currentTarget == this) currentTarget = false;
+        this.destroy();
         return;
       }
+      
+      this.p.energy += this.p.energyRegen * dt;
+      this.p.energy = Math.min(this.p.energy, this.p.maxEnergy);
       
       var tx = Math.floor(this.p.x / tilemap.p.w);
       var ty = Math.floor(this.p.y / tilemap.p.h);
@@ -380,6 +433,7 @@ $(function() {
       }
       
       this.p.realPosition = this.p.lap * 360 + this.p.position;
+      this.p.place = allCars.length - allCars.indexOf(this);
       
       $(this.p.marker).css({left: this.p.x / 32 * 150/500 - 3, top: this.p.y / 32 * 150/500 - 3});
     },
@@ -400,6 +454,7 @@ $(function() {
         spriteType: 'gun',
         rof: 0,
         nextShot: 0,
+        energy: 5
       });
     },
     
@@ -418,6 +473,8 @@ $(function() {
     
     fire: function() {
       if(this.p.nextShot > 0) return;
+      if(this.p.car.p.energy < this.p.energy) return;
+      this.p.car.p.energy -= this.p.energy;
       this.p.nextShot = this.p.rof;
       var angle = this.p.angle / 180 * Math.PI;
       var car = this.p.car;
@@ -453,17 +510,20 @@ $(function() {
     },
     
     step: function(dt) {
+      if(paused) return;
       this.p.life -= dt;
       if(this.p.life <= 0) this.destroy();
       this.p.x += this.p.vx * dt;
       this.p.y += this.p.vy * dt;
       var c = this.stage.collide(this);
-
     },
     
-    collision: function(c) {      
+    collision: function(c) {
       if(c.obj.p.type | Q.SPRITE_CAR && c.obj != this.p.car) {
         c.obj.p.life -= this.p.damage;
+        //if(this.p.car == player) {
+          currentTarget = c.obj;
+        //}
         this.destroy();
       }
     }
@@ -587,7 +647,7 @@ $(function() {
   
     stage.insert(tilemap);
     stage.collisionLayer(obstacles);
-    var player = stage.insert(new Q.Player());
+    player = stage.insert(new Q.Player());
     player.p.x = start.x * 32;
     player.p.y = start.y * 32;
     player.p.angle = startAngle;
@@ -610,10 +670,12 @@ $(function() {
     }
     
     ProcGen.drawTrack(track, mapContext, 20, 150);
-    $('#lap').html("Lap 1 / " + track.laps);
+    $('#playerPortrait .lap').html("Lap 1 / " + track.laps);
   });
   
-  Q.load("terrain.png, race_or_die5.png, pdrbullets.png, pdrguns.png, pdrpowerups.png", function() {
+  Q.load("terrain.png, race_or_die5.png, pdrbullets.png, pdrguns.png, pdrpowerups.png", startRace);
+
+  function startRace() {
     Q.sheet("tiles", "terrain.png", {
       tilew: 32,
       tileh: 32,
@@ -639,8 +701,24 @@ $(function() {
       tileh: 16,
     });
 
-    Q.stageScene("map");    
-  });
+    Q.stageScene("map");
+    $('#overlay').fadeOut();
+    var timeLeft = 3;
+    $('#countdown').html(timeLeft).show();
+    $('#pdr').focus();
+    var interval = window.setInterval(function() {
+      timeLeft--;
+
+      if(timeLeft <= 0) {
+        paused = false;          
+        $('#countdown').fadeOut();
+        $('#countdown').html("GO!");
+        window.clearInterval(interval);
+      }
+      $('#countdown').html(timeLeft);
+      console.log('tick');
+    }, 1000);
+  }
   
   function addGun(car, g) {
     var gun = car.stage.insert(new Q.Gun());

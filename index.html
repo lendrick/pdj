@@ -13,7 +13,7 @@
 <body style='background-color: #555'>
 <div style='width: 1024px; height: 768px; margin: auto; position: relative'>
   <canvas id='pdr' width='1024' height='768' style='position: absolute;'></canvas>
-  <div style='width: 150px; height: 150px; position: absolute; top: 50; right: 50; background-color: rgba(0, 0, 0, .5)'>
+  <div style='width: 150px; height: 150px; position: absolute; top: 30; right: 30; background-color: rgba(0, 0, 0, .5)'>
     <div style='width: 150px; height: 150px; position: relative'>
       <canvas id='map' width='150' height='150'></canvas>
       <div id='marker-0' class='marker' style='background-color: #f66;'></div>
@@ -39,8 +39,37 @@
       <div id='playerMarker' class='marker' style='background-color: #66f;'></div>
     </div>
   </div>
-  <div id='lap' style='position: absolute; top: 30; left: 30'></div>
-  <div id='place' style='position: absolute; top: 60; left: 30'></div>
+  
+  <div id='playerPortrait' style='position: absolute; top: 30px; left: 30px; padding: 10px; background-color: rgba(0, 0, 0, .5); width: 290px; height: 64px;'> 
+    <div style='position: relative; width: 100%; height: 100%'>
+      <div class='portrait' style='position: absolute; top: 0; left: 0; display: none'></div>
+      <div class='lap' style='position: absolute; top: 0; left: 80px'></div>
+      <div class='place' style='position: absolute; top: 0; left: 195px'></div>
+      <div class='healthContainer' style='position: absolute; top: 30px; left: 80px; width: 200px; height: 12px; border: 1px solid #fff'>
+        <div class='healthBar' style='width: 100%; height: 12px; background-color: #f00'></div>
+      </div>
+      <div class='energyContainer' style='position: absolute; top: 48px; left: 80px; width: 200px; height: 12px; border: 1px solid #fff'>
+        <div class='energyBar' style='width: 100%; height: 12px; background-color: #0ff'></div>
+      </div>
+    </div>
+  </div>
+  
+  <div id='targetPortrait' style='position: absolute; top: 150px; left: 30px; padding: 10px; background-color: rgba(0, 0, 0, .5); width: 290px; height: 64px; display: none'> 
+    <div style='position: relative; width: 100%; height: 100%'>
+      <div class='portrait' style='position: absolute; top: 0; left: 0'></div>
+      <div class='lap' style='position: absolute; top: 0; left: 80px'></div>
+      <div class='place' style='position: absolute; top: 0; left: 195px'></div>
+      <div class='healthContainer' style='position: absolute; top: 30px; left: 80px; width: 200px; height: 12px; border: 1px solid #fff'>
+        <div class='healthBar' style='width: 100%; height: 12px; background-color: #f00'></div>
+      </div>
+      <div class='energyContainer' style='position: absolute; top: 48px; left: 80px; width: 200px; height: 12px; border: 1px solid #fff'>
+        <div class='energyBar' style='width: 100%; height: 12px; background-color: #0ff'></div>
+      </div>
+    </div>
+  </div>
+  
+  <div id='overlay' style='position: absolute; top: 0; left: 0; bottom: 0; right: 0; background-color: #000;'></div>
+  <div id='countdown' style='position: absolute; text-align: center; width: 100%; top: 300px'></div>
 </div>
 </body>
 </html>
