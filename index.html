@@ -3,11 +3,44 @@
 <script src='http://cdn.html5quintus.com/v0.2.0/quintus-all.min.js'></script>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
 <script src='procgen.js'></script>
+<script src='procgen_simplex.js'></script>
 <script src='procgen_track.js'></script>
 <script src='pdr2k14.js'></script>
 <title>Procedrual Death Race 2014</title>
+<link rel="stylesheet" type="text/css" href="style.css" media="all">
+
 </head>
-<body>
-<canvas id='pdr' width='800' height='600'></canvas>
+<body style='background-color: #555'>
+<div style='width: 1024px; height: 768px; margin: auto; position: relative'>
+  <canvas id='pdr' width='1024' height='768' style='position: absolute;'></canvas>
+  <div style='width: 150px; height: 150px; position: absolute; top: 50; right: 50; background-color: rgba(0, 0, 0, .5)'>
+    <div style='width: 150px; height: 150px; position: relative'>
+      <canvas id='map' width='150' height='150'></canvas>
+      <div id='marker-0' class='marker' style='background-color: #f66;'></div>
+      <div id='marker-1' class='marker' style='background-color: #f66;'></div>
+      <div id='marker-2' class='marker' style='background-color: #f66;'></div>
+      <div id='marker-3' class='marker' style='background-color: #f66;'></div>
+      <div id='marker-4' class='marker' style='background-color: #f66;'></div>
+      <div id='marker-5' class='marker' style='background-color: #f66;'></div>
+      <div id='marker-6' class='marker' style='background-color: #f66;'></div>
+      <div id='marker-7' class='marker' style='background-color: #f66;'></div>
+      <div id='marker-8' class='marker' style='background-color: #f66;'></div>
+      <div id='marker-9' class='marker' style='background-color: #f66;'></div>
+      <div id='marker-10' class='marker' style='background-color: #f66;'></div>
+      <div id='marker-11' class='marker' style='background-color: #f66;'></div>
+      <div id='marker-12' class='marker' style='background-color: #f66;'></div>
+      <div id='marker-13' class='marker' style='background-color: #f66;'></div>
+      <div id='marker-14' class='marker' style='background-color: #f66;'></div>
+      <div id='marker-15' class='marker' style='background-color: #f66;'></div>
+      <div id='marker-16' class='marker' style='background-color: #f66;'></div>
+      <div id='marker-17' class='marker' style='background-color: #f66;'></div>
+      <div id='marker-18' class='marker' style='background-color: #f66;'></div>
+      <div id='marker-19' class='marker' style='background-color: #f66;'></div>      
+      <div id='playerMarker' class='marker' style='background-color: #66f;'></div>
+    </div>
+  </div>
+  <div id='lap' style='position: absolute; top: 30; left: 30'></div>
+  <div id='place' style='position: absolute; top: 60; left: 30'></div>
+</div>
 </body>
 </html>

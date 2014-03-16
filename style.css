@@ -1,0 +1,42 @@
+
+@font-face {
+  font-family: 'Orbitron';
+  src: url('fonts/Orbitron%20Bold.eot');
+  src: url('fonts/Orbitron%20Bold.eot?#iefix') format('embedded-opentype'), 
+       url('fonts/Orbitron%20Bold.otf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Orbitron-Black';
+  src: url('fonts/Orbitron%20Black.eot');
+  src: url('fonts/Orbitron%20Black.eot?#iefix') format('embedded-opentype'), 
+       url('fonts/Orbitron%20Black.otf') format('opentype');
+}
+
+.marker {
+  width: 7px; 
+  height: 7px; 
+  background-color: 
+  #66f;
+  top: 0; 
+  left: 0; 
+  position: absolute;
+}
+
+body {
+  background-color: #567;
+  color: #eee;
+  font-family: Orbitron, sans-serif;
+}
+
+#lap {
+  font-family: Orbitron-Black;
+  font-size: 20px;
+  color: #fff;
+}
+
+#place {
+  font-family: Orbitron-Black;
+  font-size: 20px;
+  color: #fff;
+}

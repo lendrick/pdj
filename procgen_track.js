@@ -1,5 +1,6 @@
 ProcGen.track = function(params) {
   var track = new Object();
+  /*
   var min = params.min;
   var max = params.max;
   var minSegmentLength = params.minSegmentLength;
@@ -57,24 +58,43 @@ ProcGen.track = function(params) {
   }
   
   return track;
+  */
+  var points = 60;
+  var radius = 125;
+  var sx = Math.random() * 10000000000;
+  var sy = Math.random() * 10000000000;
+  
+  track.data = new Array();
+ 
+  for(var i = 0; i < points; i++) {
+    var angle = Math.PI * 2 * i / points;
+    var x = 250 + radius * Math.cos(angle);
+    var y = 250 + radius * Math.sin(angle);
+    var r = radius + noise2d(3, x/300 + sx, y/300 + sx) * 125;
+    var a = angle;// + noise2d(3, x/400 + sx, y/400 + sx) * Math.PI / points;
+    track.data[i] = { 
+      x: 250 + r * Math.cos(a), 
+      y: 250 + r * Math.sin(a),
+      width: ProcGen.rand(2) + 4
+    };
+  }
+  track.points = track.data.length;
+  
+  track.laps = ProcGen.rand(3) + 3;
+  
+  return track;
 }
 
-ProcGen.drawTrack = function(track) {
+ProcGen.drawTrack = function(track, buffer, width, size) {
   //scale = 500 / (track.maxSize - track.minSize);
-  //ctx.setTransform(scale, 0, 0, scale, -track.minSize, -track.minSize);
-  ctx.strokeStyle = '#ccc';
-  ctx.moveTo(track.data[0].x, track.data[0].y);
-  for(i = 1; i <= track.points; i++) {
-    var p = i % track.points;
-    ctx.lineTo(track.data[p].x, track.data[p].y);
-  }
-  ctx.stroke();
+  buffer.setTransform(size/500, 0, 0, size/500, 0, 0);
+
   
   // To draw the actual track, we need to bisect each line segment and use the center as the curve
   // endpoint, then use the original line endpoints as the control points
-  ctx.beginPath();
-  ctx.strokeStyle = '#444444';
-  ctx.lineWidth = 3;
+  buffer.beginPath();
+  buffer.strokeStyle = '#eee';
+  buffer.lineWidth = width;
   for(i = 0; i <= track.points; i++) {
     var p1 = i % track.points;
     var p2 = (i+1) % track.points;
@@ -82,11 +102,21 @@ ProcGen.drawTrack = function(track) {
     y = (track.data[p1].y + track.data[p2].y) / 2;
     
     if(i == 0) {
-      ctx.moveTo(x, y);
+      buffer.moveTo(x, y);
     } else {
-      ctx.quadraticCurveTo(track.data[p1].x, track.data[p1].y, x, y);
+      buffer.quadraticCurveTo(track.data[p1].x, track.data[p1].y, x, y);
     }
   }
   
-  ctx.stroke();
+  buffer.stroke();
+  
+  buffer.beginPath();
+  buffer.strokeStyle = '#e53';
+  buffer.lineWidth = 3;
+  buffer.moveTo(track.data[0].x, track.data[0].y);
+  for(i = 1; i <= track.points; i++) {
+    var p = i % track.points;
+    buffer.lineTo(track.data[p].x, track.data[p].y);
+  }
+  buffer.stroke();
 }
